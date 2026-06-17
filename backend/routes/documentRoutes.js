@@ -125,17 +125,39 @@ router.get(
       const pages = pdfDoc.getPages();
 
       const firstPage = pages[0];
+      console.log(
+        "PDF SIZE:",
+        firstPage.getWidth(),
+        firstPage.getHeight()
+      );
 
-      signatures.forEach((sig) => {
-        firstPage.drawText(sig.signer, {
-          x: sig.x,
+      for (const sig of signatures) {
+       if (!sig.signatureImage) continue;
+
+       const imagePath = path.join(
+        __dirname,
+        "..",
+        sig.signatureImage
+       );
+
+       const imageBytes =
+        fs.readFileSync(imagePath);
+
+       const signatureImage =
+        await pdfDoc.embedJpg(imageBytes);
+
+       firstPage.drawImage(
+        signatureImage,
+        {
+          x: sig.x* (792 / 500),
           y:
-            firstPage.getHeight() -
-            sig.y,
-          size: 18,
-          color: rgb(1, 0, 0),
-        });
-      });
+           firstPage.getHeight() -
+           sig.y * (792 / 500),
+          width: 120,
+          height: 60,
+        }
+      );
+     }
 
       const pdfBytes =
         await pdfDoc.save();

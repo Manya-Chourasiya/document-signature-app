@@ -230,7 +230,12 @@ function App() {
                     console.error("PDF ERROR:", error);
                   }}
                 >
-                  <Page pageNumber={1} width={700} />
+                  <Page 
+                   pageNumber={1} 
+                   width={500}
+                   renderTextLayer={false}
+                   renderAnnotationLayer={false}
+                  />
                 </Document>
 
                 {signatures
