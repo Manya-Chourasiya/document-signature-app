@@ -28,6 +28,11 @@ const signatureSchema = new mongoose.Schema(
       required: true,
     },
 
+    signatureImage: {
+      type: String,
+      default: "",
+    },
+
     status: {
       type: String,
       default: "Pending",
@@ -38,4 +43,7 @@ const signatureSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Signature", signatureSchema);
+module.exports = mongoose.model(
+  "Signature",
+  signatureSchema
+);

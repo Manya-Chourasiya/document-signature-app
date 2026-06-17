@@ -11,6 +11,8 @@ function App() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [signatureMode, setSignatureMode] = useState(false);
+  const [signatureImage, setSignatureImage] = useState(null);
+  const [signatureImagePath, setSignatureImagePath] = useState("");
 
   const fetchDocuments = async () => {
     try {
@@ -57,12 +59,40 @@ function App() {
     }
   };
 
+  const handleSignatureImageUpload = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    setSignatureImage(file);
+
+    const formData = new FormData();
+    formData.append("signature", file);
+
+    try {
+      const response = await fetch(`${API_BASE}/api/signatures/upload-image`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      setSignatureImagePath(data.imagePath);
+
+      alert("Signature Image Uploaded");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleSignaturePlacement = async (e) => {
     if (!signatureMode || !selectedDoc) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
     const x = Math.round(e.clientX - rect.left);
     const y = Math.round(e.clientY - rect.top);
+
+    console.log("SIGNATURE PATH:", signatureImagePath);
 
     try {
       const response = await fetch(`${API_BASE}/api/signatures`, {
@@ -76,6 +106,7 @@ function App() {
           y,
           page: 1,
           signer: "manya@gmail.com",
+          signatureImage: signatureImagePath,
         }),
       });
 
@@ -100,6 +131,33 @@ function App() {
       <h1 className="text-4xl font-bold text-center mb-8">
         Document Signature App
       </h1>
+
+      <p className="text-red-600 text-2xl">
+       TEST SIGNATURE SECTION
+      </p>
+
+      {/* Upload Signature Image */}
+      <div className="bg-white p-6 rounded-xl shadow mb-6">
+        <h2 className="text-2xl font-semibold mb-4">Upload Signature Image</h2>
+
+        <input
+          type="file"
+          accept="image/png,image/jpeg"
+          onChange={handleSignatureImageUpload}
+        />
+
+        {signatureImage && (
+          <div className="mt-4">
+            <p className="mb-2">{signatureImage.name}</p>
+
+            <img
+              src={URL.createObjectURL(signatureImage)}
+              alt="Signature Preview"
+              className="h-20 border"
+            />
+          </div>
+        )}
+      </div>
 
       {/* Upload */}
       <div className="bg-white p-6 rounded-xl shadow mb-6">
@@ -178,16 +236,15 @@ function App() {
                 {signatures
                   .filter((sig) => sig.documentId === selectedDoc._id)
                   .map((sig) => (
-                    <div
+                    <img
                       key={sig._id}
+                      src={`${API_BASE}/${sig.signatureImage}`}
+                      alt="signature"
                       style={{
                         position: "absolute",
                         left: `${sig.x}px`,
                         top: `${sig.y}px`,
-                        width: "14px",
-                        height: "14px",
-                        backgroundColor: "red",
-                        borderRadius: "50%",
+                        width: "120px",
                         transform: "translate(-50%, -50%)",
                       }}
                     />
