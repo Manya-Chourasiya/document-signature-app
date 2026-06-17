@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
 
+pdfjs.GlobalWorkerOptions.workerSrc =
+  `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+  
 function App() {
   const [documents, setDocuments] = useState([]);
   const [signatures, setSignatures] = useState([]);
@@ -176,13 +180,21 @@ function App() {
             <p>Select a document</p>
           ) : (
             <>
-              <iframe
-                title="PDF Viewer"
-                src={`http://localhost:5000/uploads/${selectedDoc.fileName}`}
-                width="100%"
-                height="600px"
-                className="border rounded"
-              />
+              <p className="mb-2 text-red-500">
+               {`http://localhost:5000/uploads/${selectedDoc.fileName}`}
+              </p>
+
+              <Document
+                file={`http://localhost:5000/uploads/${selectedDoc.fileName}`}
+                onLoadError={(error) => {
+                  console.error("PDF ERROR:", error);
+                }}
+              >
+                <Page
+                  pageNumber={1}
+                  width={700}
+                />
+              </Document>
 
               <div
                 className={`mt-4 h-48 border-4 rounded flex items-center justify-center ${
