@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://signflow-document-signature-app-leli.onrender.com";
 
 function PublicSignPage() {
   const { token } = useParams();

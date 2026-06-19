@@ -14,7 +14,7 @@ import {
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://signflow-document-signature-app-leli.onrender.com";
 
 const PDF_PREVIEW_WIDTH = 750;
 
