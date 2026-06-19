@@ -173,4 +173,4 @@ Manya Chourasiya
 
 B.Tech Computer Science Engineering
 
-SignFlow was developed as a secure digital document signing solution demonstrating full-stack development, authentication, PDF processing, and secure document workflows.
+SignFlow was developed as a secure digital document signing solution demonstrating full-stack development, authentication, PDF processing, and secure document workflows.This project was developed as part of a Web Development Internship at Labmentix.
