@@ -11,10 +11,89 @@ function PublicSignPage() {
   const [documentUrl, setDocumentUrl] =
   useState("");
   const [error, setError] = useState("");
+  const [signatureImage, setSignatureImage] =
+   useState(null);
+
+  const [signatureImagePath, setSignatureImagePath] =
+   useState("");
 
   useEffect(() => {
     fetchSigningLink();
   }, []);
+
+  const handleSignatureUpload = async (
+   e
+  ) => {
+   const file = e.target.files[0];
+
+   if (!file) return;
+
+   setSignatureImage(file);
+
+   const formData = new FormData();
+
+   formData.append(
+    "signature",
+    file
+   );
+
+   try {
+    const response = await fetch(
+      `${API_BASE}/api/signatures/upload-image`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+
+    const data =
+      await response.json();
+
+    setSignatureImagePath(
+      data.imagePath
+    );
+   } catch (error) {
+     console.error(error);
+   }
+ };
+
+  const handlePublicSign = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE}/api/signatures`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            documentId:
+              linkData.documentId._id,
+            x: 200,
+            y: 200,
+            page: 1,
+            signer:
+              "public-signer@email.com",
+            signatureImage:
+              signatureImagePath,
+            status: "Signed",
+          }),
+        }
+      );
+
+      const data =
+        await response.json();
+
+      console.log(data);
+
+      alert(
+        "Document Signed Successfully"
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchSigningLink = async () => {
     try {
@@ -64,6 +143,21 @@ function PublicSignPage() {
     <div className="min-h-screen p-8 bg-gray-100">
       <div className="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
         <h1 className="text-3xl font-bold mb-6">
+          <div className="mb-6">
+           <input
+             type="file"
+             accept="image/*"
+             onChange={
+              handleSignatureUpload
+             }
+            />
+
+            {signatureImage && (
+             <p className="mt-2 text-green-600">
+               Signature Uploaded
+             </p>
+            )}
+          </div>
           Public Signing Page
         </h1>
 
@@ -103,6 +197,16 @@ function PublicSignPage() {
            title="Document Preview"
            className="w-full h-[700px] border rounded"
           />
+
+          <div className="mt-6">
+            <button
+              onClick={handlePublicSign}
+              disabled={!signatureImagePath}
+              className="bg-green-600 text-white px-6 py-3 rounded-lg"
+            >
+              Sign Document
+            </button>
+          </div>
         </div>
 )}
       </div>
